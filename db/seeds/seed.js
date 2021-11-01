@@ -37,7 +37,7 @@ const seed = ({ articleData, commentData, topicData, userData }) => {
       votes INT DEFAULT 0,
       topic VARCHAR REFERENCES topics(slug),
       author VARCHAR REFERENCES users(username),
-      created_at TIMESTAMP
+      created_at TIMESTAMP DEFAULT current_timestamp
     );`);
     })
     .then(() => {
@@ -47,7 +47,7 @@ const seed = ({ articleData, commentData, topicData, userData }) => {
     author VARCHAR REFERENCES users(username),
     article_id INT REFERENCES articles(article_id),
     votes INT DEFAULT 0,
-    created_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT current_timestamp,
     body VARCHAR NOT NULL
   );`);
     })
