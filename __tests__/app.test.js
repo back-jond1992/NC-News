@@ -127,7 +127,7 @@ describe("path: /api/articles", () => {
         });
     });
     test("status 404 responds with 'Path not found' - correct data type but id does not exist", () => {
-      const article_id = "250";
+      const article_id = 250;
       return request(app)
         .get(`/api/articles/${article_id}`)
         .expect(404)

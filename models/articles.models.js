@@ -19,18 +19,21 @@ exports.fetchArticlesById = (article_id) => {
 };
 
 exports.updateArticle = (article_id, updates) => {
-  const { inc_votes } = updates;
-  console.log(inc_votes);
-  if (!inc_votes) {
-    return Promise.reject({ status: 400, message: "Input can not be empty" });
+  if (Object.keys(updates).length > 1) {
+    return Promise.reject({ status: 400, message: "Invalid request" });
   } else {
-    return db
-      .query(
-        "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING  *;",
-        [inc_votes, article_id]
-      )
-      .then(({ rows }) => {
-        return rows[0];
-      });
+    const { inc_votes } = updates;
+    if (!inc_votes) {
+      return Promise.reject({ status: 400, message: "Input can not be empty" });
+    } else {
+      return db
+        .query(
+          "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING  *;",
+          [inc_votes, article_id]
+        )
+        .then(({ rows }) => {
+          return rows[0];
+        });
+    }
   }
 };

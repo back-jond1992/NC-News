@@ -23,7 +23,6 @@ exports.getArticlesById = (req, res, next) => {
 
 exports.patchArticle = (req, res, next) => {
   const { article_id } = req.params;
-  console.log(req.body, "<- controller");
   updateArticle(article_id, req.body)
     .then((article) => {
       res.status(200).send({ article });
