@@ -136,6 +136,117 @@ describe("path: /api/articles", () => {
         });
     });
   });
+  describe.only("GET/api/articles?queries happy path", () => {
+    test("status 200 responds with sorted array and defaults to date", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("created_at");
+        });
+    });
+    test("status 200 responds with array sorted by author", () => {
+      const sort_by = "author";
+      return request(app)
+        .get(`/api/articles?sort_by=${sort_by}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("author");
+        });
+    });
+    test("status 200 responds with array sorted by title", () => {
+      const sort_by = "title";
+      return request(app)
+        .get(`/api/articles?sort_by=${sort_by}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("title");
+        });
+    });
+    test("status 200 responds with array sorted by article_id", () => {
+      const sort_by = "article_id";
+      return request(app)
+        .get(`/api/articles?sort_by=${sort_by}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("article_id");
+        });
+    });
+    test("status 200 responds with array sorted by topic", () => {
+      const sort_by = "topic";
+      return request(app)
+        .get(`/api/articles?sort_by=${sort_by}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("topic");
+        });
+    });
+    test("status 200 responds with array sorted by votes", () => {
+      const sort_by = "votes";
+      return request(app)
+        .get(`/api/articles?sort_by=${sort_by}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("votes");
+        });
+    });
+    test("status 200 responds with sorted ", () => {
+      const sort_by = "votes";
+      return request(app)
+        .get(`/api/articles?sort_by=${sort_by}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("votes");
+        });
+    });
+    test("status 200 responds with default sorted array in DESC order", () => {
+      return request(app)
+        .get(`/api/articles?order=DESC`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+    test("status 200 responds with sorted array by query in DESC order", () => {
+      const sort_by = "votes";
+      return request(app)
+        .get(`/api/articles?sort_by=${sort_by}&order=DESC`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("votes", {
+            descending: true,
+          });
+        });
+    });
+  });
+  describe.only("GET/api/articles?queries sad path", () => {
+    test("status 400 any bad sort_by query is rejected", () => {
+      return request(app)
+        .get("/api/articles?sort_by=BADQUERY")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad query");
+        });
+    });
+    test("status 400 any order query other than 'ASC' or 'DESC' rejected", () => {
+      return request(app)
+        .get("/api/articles?order=BADQUERY")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad query");
+        });
+    });
+    test("status 400 rejects request if one query incorrect", () => {
+      return request(app)
+        .get("/api/articles?sort_by=BADQUERY&order=ASC'")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad query");
+        });
+    });
+  });
   describe("PATCH/api/articles/:id happy patch", () => {
     test("status 200 responds with amended object", () => {
       const article_id = 4;

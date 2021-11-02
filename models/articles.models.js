@@ -1,9 +1,28 @@
 const db = require("../db");
 
-exports.fetchAllArticles = () => {
-  return db.query(`SELECT * FROM articles;`).then(({ rows }) => {
-    return rows;
-  });
+exports.fetchAllArticles = (sort_by = "created_at", order = "ASC") => {
+  if (
+    sort_by !== "author" &&
+    sort_by !== "title" &&
+    sort_by !== "treasure_name" &&
+    sort_by !== "article_id" &&
+    sort_by !== "topic" &&
+    sort_by !== "created_at" &&
+    sort_by !== "votes" &&
+    sort_by !== "comment_count"
+  ) {
+    return Promise.reject({ status: 400, message: "Bad query" });
+  }
+
+  if (order !== "ASC" && order !== "DESC") {
+    return Promise.reject({ status: 400, message: "Bad query" });
+  }
+
+  return db
+    .query(`SELECT * FROM articles ORDER BY ${sort_by} ${order};`)
+    .then(({ rows }) => {
+      return rows;
+    });
 };
 
 exports.fetchArticlesById = (article_id) => {
