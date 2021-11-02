@@ -1,4 +1,9 @@
 const express = require("express");
+const {
+  handles500Errors,
+  handlesPSQLErrors,
+  handlesCustomErrors,
+} = require("./controllers/error.controllers");
 
 const apiRouter = require("./routes/api-router");
 
@@ -7,8 +12,14 @@ app.use(express.json());
 
 app.use("/api", apiRouter);
 
-app.all("*", (req, res) => {
-  res.status(404).send({ msg: "Path not found" });
+app.all("*", (req, res, next) => {
+  res.status(404).send({ message: "Path not found" });
 });
+
+app.use(handlesPSQLErrors);
+
+app.use(handlesCustomErrors);
+
+app.use(handles500Errors);
 
 module.exports = app;

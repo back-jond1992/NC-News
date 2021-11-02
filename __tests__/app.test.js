@@ -24,7 +24,7 @@ describe("path: /api", () => {
         .get("/api/BAD_PATH")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Path not found");
+          expect(body.message).toBe("Path not found");
         });
     });
   });
@@ -56,7 +56,7 @@ describe("path: /api/topics", () => {
         .get("/api/BAD_PATH")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Path not found");
+          expect(body.message).toBe("Path not found");
         });
     });
   });
@@ -93,14 +93,15 @@ describe("path: /api/articles", () => {
         .get("/api/BAD_PATH")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Path not found");
+          expect(body.message).toBe("Path not found");
         });
     });
   });
-  describe("GET/api/:id happy path", () => {
+  describe("GET/api/articles/:id happy path", () => {
     test("status 200 responds with article by Id", () => {
+      const article_id = 4;
       return request(app)
-        .get("/api/articles/4")
+        .get(`/api/articles/${article_id}`)
         .expect(200)
         .then(({ body }) => {
           expect(body.article).toEqual({
@@ -115,13 +116,80 @@ describe("path: /api/articles", () => {
         });
     });
   });
-  xdescribe("GET/api/articles/:id sad path", () => {
-    test("status 404 responds with 'Path not found'", () => {
+  describe("GET/api/articles/:id sad path", () => {
+    test("status 400 responds with 'Invalid request' - wrong data type for request", () => {
+      const article_id = "badpath";
       return request(app)
-        .get("/api/BAD_PATH")
+        .get(`/api/articles/${article_id}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+    test("status 404 responds with 'Path not found' - correct data type but id does not exist", () => {
+      const article_id = "250";
+      return request(app)
+        .get(`/api/articles/${article_id}`)
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Path not found");
+          expect(body.message).toBe("Not found");
+        });
+    });
+  });
+  describe("PATCH/api/articles/:id happy patch", () => {
+    test("status 200 responds with amended object", () => {
+      const article_id = 4;
+      const updates = { inc_votes: 1 };
+      const updatedArticle = {
+        article_id: 4,
+        title: "Student SUES Mitch!",
+        topic: "mitch",
+        author: "rogersop",
+        body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+        created_at: "2020-05-06T01:14:00.000Z",
+        votes: 1,
+      };
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(updates)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).toEqual({ ...updatedArticle });
+        });
+    });
+  });
+  describe("PATCH/api/articles/:id sad patch", () => {
+    test("status 400 responds with Bad request - input empty", () => {
+      const article_id = 4;
+      const updates = {};
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(updates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Input can not be empty");
+        });
+    });
+    test("status 400 responds with Bad request - invalid request", () => {
+      const article_id = 4;
+      const updates = { inc_votes: "I am not valid" };
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(updates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+    test("status 400 responds with Bad request - invalid request", () => {
+      const article_id = 4;
+      const updates = { inc_votes: 1, name: "I am not valid" };
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(updates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
         });
     });
   });
