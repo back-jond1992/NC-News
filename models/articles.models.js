@@ -23,21 +23,24 @@ exports.fetchAllArticles = (
     return Promise.reject({ status: 400, message: "Bad query" });
   }
 
-  console.log(topicQuery, "<- this is model");
-
   let queryStr = fetchAllArticlesQuery;
 
+  const sanitiser = [];
+
   if (topicQuery) {
-    queryStr += ` WHERE topic = '${topicQuery}'`;
+    sanitiser.push(topicQuery);
+    queryStr += ` WHERE topic = $1`;
   }
-  console.log(queryStr);
 
   queryStr += ` GROUP BY articles.article_id`;
 
   queryStr += ` ORDER BY ${sort_by} ${order};`;
-  console.log(queryStr);
 
-  return db.query(queryStr).then(({ rows }) => {
+  return db.query(queryStr, sanitiser).then(({ rows }) => {
+    console.log(rows);
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, message: "Not found" });
+    }
     return rows;
   });
 };

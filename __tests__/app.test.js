@@ -138,7 +138,7 @@ describe("path: /api/articles", () => {
         });
     });
   });
-  describe.only("GET/api/articles?queries happy path", () => {
+  describe("GET/api/articles?queries happy path", () => {
     test("status 200 responds with sorted array and defaults to date", () => {
       return request(app)
         .get("/api/articles")
@@ -247,7 +247,7 @@ describe("path: /api/articles", () => {
         });
     });
   });
-  describe.only("GET/api/articles?queries sad path", () => {
+  describe("GET/api/articles?queries sad path", () => {
     test("status 400 any bad sort_by query is rejected", () => {
       return request(app)
         .get("/api/articles?sort_by=BADQUERY")
@@ -272,12 +272,12 @@ describe("path: /api/articles", () => {
           expect(body.message).toBe("Bad query");
         });
     });
-    test("status 400 rejects request if bad topic query", () => {
+    test.only("status 404 rejects request if bad topic query", () => {
       return request(app)
         .get("/api/articles?topic=BADQUERY")
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.message).toBe("Bad query");
+          expect(body.message).toBe("Not found");
         });
     });
   });
