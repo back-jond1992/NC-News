@@ -272,7 +272,7 @@ describe("path: /api/articles", () => {
           expect(body.message).toBe("Bad query");
         });
     });
-    test.only("status 404 rejects request if bad topic query", () => {
+    test("status 404 rejects request if bad topic query", () => {
       return request(app)
         .get("/api/articles?topic=BADQUERY")
         .expect(404)
@@ -335,6 +335,29 @@ describe("path: /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Invalid request");
+        });
+    });
+  });
+  describe("GET/api/articles/:article_id/comments happy path", () => {
+    test("status 200 responds with array of comments for article_id", () => {
+      const article_id = 1;
+      return request(app)
+        .get(`/api/articles/${article_id}/comments`)
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toHaveLength(11);
+          comments.forEach((object) => {
+            expect(object).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+              })
+            );
+          });
         });
     });
   });
