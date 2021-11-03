@@ -1,6 +1,11 @@
 const db = require("../db");
+const { fetchArticlesByIdQuery, fetchAllArticlesQuery } = require("../queries");
 
-exports.fetchAllArticles = (sort_by = "created_at", order = "ASC") => {
+exports.fetchAllArticles = (
+  sort_by = "created_at",
+  order = "ASC",
+  topicQuery
+) => {
   if (
     sort_by !== "author" &&
     sort_by !== "title" &&
@@ -18,23 +23,33 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "ASC") => {
     return Promise.reject({ status: 400, message: "Bad query" });
   }
 
-  return db
-    .query(`SELECT * FROM articles ORDER BY ${sort_by} ${order};`)
-    .then(({ rows }) => {
-      return rows;
-    });
+  console.log(topicQuery, "<- this is model");
+
+  let queryStr = fetchAllArticlesQuery;
+
+  if (topicQuery) {
+    queryStr += ` WHERE topic = '${topicQuery}'`;
+  }
+  console.log(queryStr);
+
+  queryStr += ` GROUP BY articles.article_id`;
+
+  queryStr += ` ORDER BY ${sort_by} ${order};`;
+  console.log(queryStr);
+
+  return db.query(queryStr).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.fetchArticlesById = (article_id) => {
-  return db
-    .query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id])
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, message: "Not found" });
-      } else {
-        return rows[0];
-      }
-    });
+  return db.query(fetchArticlesByIdQuery, [article_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, message: "Not found" });
+    } else {
+      return rows[0];
+    }
+  });
 };
 
 exports.updateArticle = (article_id, updates) => {

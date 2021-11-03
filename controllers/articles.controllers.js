@@ -7,7 +7,9 @@ const {
 exports.getAllArticles = (req, res, next) => {
   const sort_by = req.query.sort_by;
   const order = req.query.order;
-  fetchAllArticles(sort_by, order)
+  const topicQuery = req.query.topic;
+  console.log(topicQuery);
+  fetchAllArticles(sort_by, order, topicQuery)
     .then((articles) => {
       res.status(200).send({ articles });
     })

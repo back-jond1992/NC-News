@@ -81,6 +81,7 @@ describe("path: /api/articles", () => {
                 body: expect.any(String),
                 created_at: expect.any(String),
                 votes: expect.any(Number),
+                comment_count: expect.any(Number),
               })
             );
           });
@@ -112,6 +113,7 @@ describe("path: /api/articles", () => {
             body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
             created_at: "2020-05-06T01:14:00.000Z",
             votes: 0,
+            comment_count: 0,
           });
         });
     });
@@ -190,13 +192,13 @@ describe("path: /api/articles", () => {
           expect(body.articles).toBeSortedBy("votes");
         });
     });
-    test("status 200 responds with sorted ", () => {
-      const sort_by = "votes";
+    test("status 200 responds with array sorted by comment_count", () => {
+      const sort_by = "comment_count";
       return request(app)
         .get(`/api/articles?sort_by=${sort_by}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("votes");
+          expect(body.articles).toBeSortedBy("comment_count");
         });
     });
     test("status 200 responds with default sorted array in DESC order", () => {
@@ -217,6 +219,30 @@ describe("path: /api/articles", () => {
         .then(({ body }) => {
           expect(body.articles).toBeSortedBy("votes", {
             descending: true,
+          });
+        });
+    });
+    test("status 200 responds with array of results based on topic query", () => {
+      const topicQuery = "mitch";
+      return request(app)
+        .get(`/api/articles?topic=${topicQuery}`)
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toHaveLength(11);
+          articles.forEach((object) => {
+            expect(object).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                topic: "mitch",
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number),
+              })
+            );
           });
         });
     });
@@ -241,6 +267,14 @@ describe("path: /api/articles", () => {
     test("status 400 rejects request if one query incorrect", () => {
       return request(app)
         .get("/api/articles?sort_by=BADQUERY&order=ASC'")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad query");
+        });
+    });
+    test("status 400 rejects request if bad topic query", () => {
+      return request(app)
+        .get("/api/articles?topic=BADQUERY")
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad query");
