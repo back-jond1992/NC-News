@@ -363,7 +363,7 @@ describe("path: /api/articles", () => {
   });
   describe("GET/api/articles/:article_id/comments sad path", () => {
     test("status 404 article id has no related comments", () => {
-      const article_id = 5;
+      const article_id = 7;
       return request(app)
         .get(`/api/articles/${article_id}/comments`)
         .expect(404)
