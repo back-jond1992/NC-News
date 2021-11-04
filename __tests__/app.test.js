@@ -395,4 +395,69 @@ describe("path: /api/articles", () => {
         });
     });
   });
+  describe("POST/api/articles/:article_id/comments", () => {
+    test("status 400 responds with Bad request - input empty", () => {
+      const article_id = 4;
+      const commentPost = {};
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(commentPost)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Input can not be empty");
+        });
+    });
+    test("status 400 responds with Bad request - invalid request - no body", () => {
+      const article_id = 4;
+      const commentPost = { username: "Jack", favouriteTest: "SUPERTEST" };
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(commentPost)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Must contain body");
+        });
+    });
+    test("status 400 responds with Bad request - invalid request - too many ", () => {
+      const article_id = 4;
+      const commentPost = {
+        name: "Jack",
+        body: "This is a test!",
+        favouriteTest: "supertest",
+      };
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(commentPost)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+  });
+});
+
+describe("path: /api/comments", () => {
+  describe("DELETE/api/comments/:comment_id happy path", () => {
+    test("status 204 deletes comment by id", () => {
+      return request(app).delete("/api/comments/6").expect(204);
+    });
+    describe("DELETE/api/comments/:comment_id sad path", () => {
+      test("status 404 not found when id doesn't exist", () => {
+        return request(app)
+          .delete("/api/comments/9291")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.message).toBe("Not found");
+          });
+      });
+      test("status 400 not found when id wrong data type", () => {
+        return request(app)
+          .delete("/api/comments/badpath")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.message).toBe("Invalid request");
+          });
+      });
+    });
+  });
 });

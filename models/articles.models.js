@@ -87,17 +87,22 @@ exports.fetchAllComments = (article_id) => {
 };
 
 exports.inputComment = (article_id, newComment) => {
-  const { username, body } = newComment;
-  return db
-    .query("INSERT INTO users (username) VALUES($1)", [username])
-    .then(() => {
-      return db.query(
-        "INSERT INTO comments (article_id, author, body) VALUES($1, $2, $3) RETURNING *;",
-        [article_id, username, body]
-      );
-    })
-    .then(({ rows }) => {
-      console.log(rows);
-      return rows[0];
-    });
+  if (Object.keys(newComment).length > 2) {
+    return Promise.reject({ status: 400, message: "Invalid request" });
+  } else if (Object.keys(newComment).length === 0) {
+    return Promise.reject({ status: 400, message: "Input can not be empty" });
+  } else {
+    const { username, body } = newComment;
+    return db
+      .query("INSERT INTO users (username) VALUES($1)", [username])
+      .then(() => {
+        return db.query(
+          "INSERT INTO comments (article_id, author, body) VALUES($1, $2, $3) RETURNING *;",
+          [article_id, username, body]
+        );
+      })
+      .then(({ rows }) => {
+        return rows[0];
+      });
+  }
 };

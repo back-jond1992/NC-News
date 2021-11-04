@@ -1,4 +1,6 @@
-//const commentRouter = require("express").Router();
-//const { getAllComments } = require("../controllers/comments.controllers");
+const commentRouter = require("express").Router();
+const { deleteComment } = require("../controllers/comments.controllers");
 
-//module.exports = commentRouter;
+commentRouter.delete("/:comment_id", deleteComment);
+
+module.exports = commentRouter;
