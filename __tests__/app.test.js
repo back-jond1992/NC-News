@@ -372,4 +372,27 @@ describe("path: /api/articles", () => {
         });
     });
   });
+  describe("POST/api/:article_id/comments happy path", () => {
+    test("status 201 responds with added body", () => {
+      const article_id = 3;
+      const commentPost = {
+        username: "Jack",
+        body: "This is a test!",
+      };
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(commentPost)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({
+            comment_id: expect.any(Number),
+            votes: 0,
+            article_id: 3,
+            created_at: expect.any(String),
+            author: "Jack",
+            body: "This is a test!",
+          });
+        });
+    });
+  });
 });
