@@ -3,7 +3,7 @@ const { fetchArticlesByIdQuery, fetchAllArticlesQuery } = require("../queries");
 
 exports.fetchAllArticles = (
   sort_by = "created_at",
-  order = "ASC",
+  order = "DESC",
   topicQuery
 ) => {
   if (
@@ -60,7 +60,11 @@ exports.updateArticle = (article_id, updates) => {
   } else {
     const { inc_votes } = updates;
     if (!inc_votes) {
-      return Promise.reject({ status: 400, message: "Input can not be empty" });
+      return db
+        .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+        .then(({ rows }) => {
+          return rows[0];
+        });
     } else {
       return db
         .query(
@@ -93,8 +97,9 @@ exports.inputComment = (article_id, newComment) => {
     return Promise.reject({ status: 400, message: "Input can not be empty" });
   } else {
     const { username, body } = newComment;
+    console.log(username, body);
     return db
-      .query("INSERT INTO users (username) VALUES($1)", [username])
+      .query("INSERT INTO users (username) VALUES($1);", [username])
       .then(() => {
         return db.query(
           "INSERT INTO comments (article_id, author, body) VALUES($1, $2, $3) RETURNING *;",

@@ -3,6 +3,8 @@ exports.handlesPSQLErrors = (err, req, res, next) => {
     res.status(400).send({ message: "Invalid request" });
   } else if (err.code === "23502") {
     res.status(400).send({ message: "Must contain body" });
+  } else if (err.code === "23503") {
+    res.status(400).send({ message: "Invalid request" });
   } else {
     next(err);
   }

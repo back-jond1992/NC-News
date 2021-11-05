@@ -7,7 +7,7 @@ const request = require("supertest");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
-describe.only("path: /api", () => {
+describe("path: /api", () => {
   describe("GET/api happy path", () => {
     test("status 200 responds with content from endpoints.json", () => {
       return request(app)
@@ -75,6 +75,7 @@ describe("path: /api/articles", () => {
         .then(({ body }) => {
           const { articles } = body;
           expect(articles).toHaveLength(12);
+          expect(articles[0].comment_count).toBe(2);
           articles.forEach((object) => {
             expect(object).toEqual(
               expect.objectContaining({
@@ -148,7 +149,9 @@ describe("path: /api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("created_at");
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
         });
     });
     test("status 200 responds with array sorted by author", () => {
@@ -157,7 +160,9 @@ describe("path: /api/articles", () => {
         .get(`/api/articles?sort_by=${sort_by}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("author");
+          expect(body.articles).toBeSortedBy("author", {
+            descending: true,
+          });
         });
     });
     test("status 200 responds with array sorted by title", () => {
@@ -166,7 +171,9 @@ describe("path: /api/articles", () => {
         .get(`/api/articles?sort_by=${sort_by}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("title");
+          expect(body.articles).toBeSortedBy("title", {
+            descending: true,
+          });
         });
     });
     test("status 200 responds with array sorted by article_id", () => {
@@ -175,7 +182,9 @@ describe("path: /api/articles", () => {
         .get(`/api/articles?sort_by=${sort_by}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("article_id");
+          expect(body.articles).toBeSortedBy("article_id", {
+            descending: true,
+          });
         });
     });
     test("status 200 responds with array sorted by topic", () => {
@@ -184,7 +193,9 @@ describe("path: /api/articles", () => {
         .get(`/api/articles?sort_by=${sort_by}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("topic");
+          expect(body.articles).toBeSortedBy("topic", {
+            descending: true,
+          });
         });
     });
     test("status 200 responds with array sorted by votes", () => {
@@ -193,7 +204,9 @@ describe("path: /api/articles", () => {
         .get(`/api/articles?sort_by=${sort_by}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("votes");
+          expect(body.articles).toBeSortedBy("votes", {
+            descending: true,
+          });
         });
     });
     test("status 200 responds with array sorted by comment_count", () => {
@@ -202,7 +215,9 @@ describe("path: /api/articles", () => {
         .get(`/api/articles?sort_by=${sort_by}`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("comment_count");
+          expect(body.articles).toBeSortedBy("comment_count", {
+            descending: true,
+          });
         });
     });
     test("status 200 responds with default sorted array in DESC order", () => {
@@ -215,15 +230,13 @@ describe("path: /api/articles", () => {
           });
         });
     });
-    test("status 200 responds with sorted array by query in DESC order", () => {
+    test("status 200 responds with sorted array by query in ASC order", () => {
       const sort_by = "votes";
       return request(app)
-        .get(`/api/articles?sort_by=${sort_by}&order=DESC`)
+        .get(`/api/articles?sort_by=${sort_by}&order=ASC`)
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("votes", {
-            descending: true,
-          });
+          expect(body.articles).toBeSortedBy("votes");
         });
     });
     test("status 200 responds with array of results based on topic query", () => {
@@ -310,13 +323,22 @@ describe("path: /api/articles", () => {
   describe("PATCH/api/articles/:id sad patch", () => {
     test("status 400 responds with Bad request - input empty", () => {
       const article_id = 4;
+      const testArticle = {
+        article_id: 4,
+        title: "Student SUES Mitch!",
+        topic: "mitch",
+        author: "rogersop",
+        body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+        created_at: "2020-05-06T01:14:00.000Z",
+        votes: 0,
+      };
       const updates = {};
       return request(app)
         .patch(`/api/articles/${article_id}`)
         .send(updates)
-        .expect(400)
+        .expect(200)
         .then(({ body }) => {
-          expect(body.message).toBe("Input can not be empty");
+          expect(body.article).toEqual(testArticle);
         });
     });
     test("status 400 responds with Bad request - invalid request", () => {
@@ -376,9 +398,9 @@ describe("path: /api/articles", () => {
         });
     });
   });
-  describe("POST/api/:article_id/comments happy path", () => {
+  describe.only("POST/api/articles/:article_id/comments happy path", () => {
     test("status 201 responds with added body", () => {
-      const article_id = 3;
+      const article_id = 1;
       const commentPost = {
         username: "Jack",
         body: "This is a test!",
@@ -391,7 +413,7 @@ describe("path: /api/articles", () => {
           expect(body.comment).toEqual({
             comment_id: expect.any(Number),
             votes: 0,
-            article_id: 3,
+            article_id: 1,
             created_at: expect.any(String),
             author: "Jack",
             body: "This is a test!",
@@ -399,7 +421,7 @@ describe("path: /api/articles", () => {
         });
     });
   });
-  describe("POST/api/articles/:article_id/comments", () => {
+  describe.only("POST/api/articles/:article_id/comments sad path", () => {
     test("status 400 responds with Bad request - input empty", () => {
       const article_id = 4;
       const commentPost = {};
@@ -420,6 +442,17 @@ describe("path: /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Must contain body");
+        });
+    });
+    test("status 400 responds with invalid request - id does not exists", () => {
+      const article_id = 1000;
+      const commentPost = { username: "Jack", body: "This is a test!" };
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(commentPost)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
         });
     });
     test("status 400 responds with Bad request - invalid request - too many ", () => {

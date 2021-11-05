@@ -7,7 +7,6 @@ exports.removeComment = (comment_id) => {
     ])
     .then(({ rows }) => {
       const deleted = rows[0];
-      console.log(deleted);
       if (!deleted) {
         return Promise.reject({
           status: 404,

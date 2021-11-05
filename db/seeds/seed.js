@@ -23,7 +23,7 @@ const seed = ({ articleData, commentData, topicData, userData }) => {
     .then(() => {
       return db.query(`
       CREATE TABLE users (
-        username VARCHAR (50) UNIQUE PRIMARY KEY NOT NULL,
+        username VARCHAR (50) UNIQUE PRIMARY KEY,
         avatar_url VARCHAR,
         name VARCHAR
       );`);
