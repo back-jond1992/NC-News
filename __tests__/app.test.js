@@ -402,7 +402,7 @@ describe("path: /api/articles", () => {
     test("status 201 responds with added body", () => {
       const article_id = 1;
       const commentPost = {
-        username: "Jack",
+        username: "icellusedkars",
         body: "This is a test!",
       };
       return request(app)
@@ -415,7 +415,7 @@ describe("path: /api/articles", () => {
             votes: 0,
             article_id: 1,
             created_at: expect.any(String),
-            author: "Jack",
+            author: "icellusedkars",
             body: "This is a test!",
           });
         });
@@ -430,7 +430,7 @@ describe("path: /api/articles", () => {
         .send(commentPost)
         .expect(400)
         .then(({ body }) => {
-          expect(body.message).toBe("Input can not be empty");
+          expect(body.message).toBe("Invalid request");
         });
     });
     test("status 400 responds with Bad request - invalid request - no body", () => {
@@ -446,7 +446,10 @@ describe("path: /api/articles", () => {
     });
     test("status 400 responds with invalid request - id does not exists", () => {
       const article_id = 1000;
-      const commentPost = { username: "Jack", body: "This is a test!" };
+      const commentPost = {
+        username: "Jack",
+        body: "This is a test!",
+      };
       return request(app)
         .post(`/api/articles/${article_id}/comments`)
         .send(commentPost)
