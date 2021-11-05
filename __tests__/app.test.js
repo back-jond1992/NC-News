@@ -7,14 +7,23 @@ const request = require("supertest");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
-describe("path: /api", () => {
+describe.only("path: /api", () => {
   describe("GET/api happy path", () => {
-    test("status 200 responds with 'All OK from API Router'", () => {
+    test("status 200 responds with content from endpoints.json", () => {
       return request(app)
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          expect(body.message).toBe("All OK from API Router");
+          const { api } = body;
+          expect(api).toHaveLength(8);
+          //   topics.forEach((object) => {
+          //     expect(object).toEqual(
+          //       expect.objectContaining({
+          //         description: expect.any(String),
+          //         slug: expect.any(String),
+          //       })
+          //     );
+          //   });
         });
     });
   });
