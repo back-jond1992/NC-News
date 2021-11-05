@@ -16,14 +16,9 @@ describe.only("path: /api", () => {
         .then(({ body }) => {
           const { api } = body;
           expect(api).toHaveLength(8);
-          //   topics.forEach((object) => {
-          //     expect(object).toEqual(
-          //       expect.objectContaining({
-          //         description: expect.any(String),
-          //         slug: expect.any(String),
-          //       })
-          //     );
-          //   });
+          api.forEach((object) => {
+            expect(object).toBeInstanceOf(Object);
+          });
         });
     });
   });
