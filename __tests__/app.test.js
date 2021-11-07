@@ -517,31 +517,49 @@ describe("path: /api/comments", () => {
       });
     });
   });
-  describe("PATCH/api/comments/:comment_id happy path", () => {
-      test("status 200 responds with amended object", () => {
-        const comment_id = 3;
-        const updates = { inc_votes: 1 };
-        const updatedComment = {
-          comment_id: 3,
-          body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
-          votes: "101",
-          author: "icellusedkars",
-          article_id: "1",
-          created_at: "",
-        };
-        return request(app)
-          .patch(`/api/comments/${comment_id}`)
-          .send(updates)
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.comment).toEqual({ ... updatedComment});
-          });
-      });
-    })
-  })
+  describe.only("PATCH/api/comments/:comment_id happy path", () => {
+    test("status 200 responds with amended object - up vote", () => {
+      const comment_id = 3;
+      const updates = { inc_votes: 1 };
+      const updatedComment = {
+        comment_id: 3,
+        body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        votes: 101,
+        author: "icellusedkars",
+        article_id: 1,
+        created_at: "2020-03-01T01:13:00.000Z",
+      };
+      return request(app)
+        .patch(`/api/comments/${comment_id}`)
+        .send(updates)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({ ...updatedComment });
+        });
+    });
+    test("status 200 responds with amended object - down vote", () => {
+      const comment_id = 3;
+      const updates = { inc_votes: -1 };
+      const updatedComment = {
+        comment_id: 3,
+        body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        votes: 99,
+        author: "icellusedkars",
+        article_id: 1,
+        created_at: "2020-03-01T01:13:00.000Z",
+      };
+      return request(app)
+        .patch(`/api/comments/${comment_id}`)
+        .send(updates)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({ ...updatedComment });
+        });
+    });
+  });
 });
 
-describe.only("path: /api/users", () => {
+describe("path: /api/users", () => {
   describe("GET/api/users happy path", () => {
     test("status 200 responds with array of users", () => {
       return request(app)
