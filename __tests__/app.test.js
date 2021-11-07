@@ -517,6 +517,28 @@ describe("path: /api/comments", () => {
       });
     });
   });
+  describe("PATCH/api/comments/:comment_id happy path", () => {
+      test("status 200 responds with amended object", () => {
+        const comment_id = 3;
+        const updates = { inc_votes: 1 };
+        const updatedComment = {
+          comment_id: 3,
+          body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+          votes: "101",
+          author: "icellusedkars",
+          article_id: "1",
+          created_at: "",
+        };
+        return request(app)
+          .patch(`/api/comments/${comment_id}`)
+          .send(updates)
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment).toEqual({ ... updatedComment});
+          });
+      });
+    })
+  })
 });
 
 describe.only("path: /api/users", () => {
@@ -547,6 +569,33 @@ describe.only("path: /api/users", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe("Path not found");
+        });
+    });
+  });
+  describe("GET/api/users/:username happy path", () => {
+    test("status 200 responds with user by username", () => {
+      const username = "butter_bridge";
+      return request(app)
+        .get(`/api/users/${username}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.user).toEqual({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          });
+        });
+    });
+  });
+  describe("GET/api/users/:username sad path", () => {
+    test("status 404 username not found", () => {
+      const username = "jack";
+      return request(app)
+        .get(`/api/users/${username}`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Username not found");
         });
     });
   });

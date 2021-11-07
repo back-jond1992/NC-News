@@ -1,10 +1,19 @@
-const { removeComment } = require("../models/comments.models");
+const { removeComment, patchComment } = require("../models/comments.models");
 
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
   removeComment(comment_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch(next);
+};
+
+exports.patchComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  updateArticle(comment_id, req.body)
+    .then((comment) => {
+      res.status(200).send({ comment });
     })
     .catch(next);
 };

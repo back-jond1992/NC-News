@@ -125,7 +125,22 @@
       "description": "serves an array of all users",
       "queries": [],
       "exampleResponse": {
-        "topics": [{ "username": "lurker", "name": "do_nothing", "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png" }]
+        "users": [{ "username": "lurker", "name": "do_nothing", "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png" }]
+      }
+    }
+  },
+
+  { 
+    "GET /api/users/:username": {
+      "description": "takes a username and serves the corresponding user",
+      "queries": [],
+      "exampleResponse": {
+        "user": 
+          { 
+            "username": "lurker", 
+            "name": "do_nothing", 
+            "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png" 
+          }
       }
     }
   }
