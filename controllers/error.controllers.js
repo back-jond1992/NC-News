@@ -4,7 +4,7 @@ exports.handlesPSQLErrors = (err, req, res, next) => {
   } else if (err.code === "23502") {
     res.status(400).send({ message: "Must contain body" });
   } else if (err.code === "23503") {
-    res.status(400).send({ message: "Invalid request" });
+    res.status(404).send({ message: "Id not found" });
   } else {
     next(err);
   }

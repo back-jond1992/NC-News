@@ -91,7 +91,6 @@ exports.fetchAllComments = (article_id) => {
 };
 
 exports.inputComment = (article_id, newComment) => {
-  console.log(newComment);
   if (Object.keys(newComment).length > 2) {
     return Promise.reject({ status: 400, message: "Invalid request" });
   } else if (Object.keys(newComment).length < 2) {
@@ -99,62 +98,21 @@ exports.inputComment = (article_id, newComment) => {
   } else {
     const { username, body } = newComment;
     return db
-      .query(
-        "INSERT INTO comments (article_id, author, body) VALUES($1, $2, $3) RETURNING *;",
-        [article_id, username, body]
-      )
+      .query("SELECT * FROM users WHERE username = $1;", [username])
       .then(({ rows }) => {
-        return rows[0];
+        if (rows.length === 0) {
+          return Promise.reject({ status: 404, message: "Username not found" });
+        }
+      })
+      .then(() => {
+        return db
+          .query(
+            "INSERT INTO comments (article_id, author, body) VALUES($1, $2, $3) RETURNING *;",
+            [article_id, username, body]
+          )
+          .then(({ rows }) => {
+            return rows[0];
+          });
       });
   }
 };
-
-// exports.addCommentByArticleId = async (article_id, newComment) => {
-//   const { username, body } = newComment;
-//   const keyArr = Object.keys(newComment);
-//   if (keyArr.length < 2) {
-//     return Promise.reject({
-//       status: 400,
-//       msg: "missing required fields",
-//     });
-//   } else if (
-//     !keyArr.includes("username") ||
-//     typeof newComment.username !== "string" ||
-//     typeof newComment.body !== "string" ||
-//     !keyArr.includes("body")
-//   ) {
-//     return Promise.reject({
-//       status: 400,
-//       msg: "incorrect type",
-//     });
-//   }
-//   const usernameResult = await db.query("SELECT * FROM users");
-//   const usernameArr = usernameResult.rows.map((user) => user.username);
-//   if (!usernameArr.includes(username)) {
-//     return Promise.reject({
-//       status: 404,
-//       msg: "user does not exist",
-//     });
-//   }
-//   const articleResult = await db.query(
-//     `SELECT * FROM articles WHERE article_id = $1`,
-//     [article_id]
-//   );
-//   if (articleResult.rows.length === 0) {
-//     return Promise.reject({
-//       status: 404,
-//       msg: "article not found",
-//     });
-//   }
-//   const queryStr = `
-//   INSERT INTO comments (
-//       article_id,
-//       author,
-//       body
-//       )
-//       VALUES ($1,$2,$3)
-//       RETURNING *
-//     `;
-//   const { rows } = await db.query(queryStr, [article_id, username, body]);
-//   return rows[0];
-// };

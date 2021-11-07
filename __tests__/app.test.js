@@ -398,7 +398,7 @@ describe("path: /api/articles", () => {
         });
     });
   });
-  describe.only("POST/api/articles/:article_id/comments happy path", () => {
+  describe("POST/api/articles/:article_id/comments happy path", () => {
     test("status 201 responds with added body", () => {
       const article_id = 1;
       const commentPost = {
@@ -421,7 +421,7 @@ describe("path: /api/articles", () => {
         });
     });
   });
-  describe.only("POST/api/articles/:article_id/comments sad path", () => {
+  describe("POST/api/articles/:article_id/comments sad path", () => {
     test("status 400 responds with Bad request - input empty", () => {
       const article_id = 4;
       const commentPost = {};
@@ -435,7 +435,10 @@ describe("path: /api/articles", () => {
     });
     test("status 400 responds with Bad request - invalid request - no body", () => {
       const article_id = 4;
-      const commentPost = { username: "Jack", favouriteTest: "SUPERTEST" };
+      const commentPost = {
+        username: "icellusedkars",
+        favouriteTest: "SUPERTEST",
+      };
       return request(app)
         .post(`/api/articles/${article_id}/comments`)
         .send(commentPost)
@@ -444,24 +447,24 @@ describe("path: /api/articles", () => {
           expect(body.message).toBe("Must contain body");
         });
     });
-    test("status 400 responds with invalid request - id does not exists", () => {
+    test("status 404 responds with invalid request - id does not exists", () => {
       const article_id = 1000;
       const commentPost = {
-        username: "Jack",
+        username: "icellusedkars",
         body: "This is a test!",
       };
       return request(app)
         .post(`/api/articles/${article_id}/comments`)
         .send(commentPost)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.message).toBe("Invalid request");
+          expect(body.message).toBe("Id not found");
         });
     });
     test("status 400 responds with Bad request - invalid request - too many ", () => {
       const article_id = 4;
       const commentPost = {
-        name: "Jack",
+        username: "icellusedkars",
         body: "This is a test!",
         favouriteTest: "supertest",
       };
@@ -471,6 +474,20 @@ describe("path: /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Invalid request");
+        });
+    });
+    test("status 404 bad request - username does not exist", () => {
+      const article_id = 4;
+      const commentPost = {
+        username: "Jack",
+        body: "This is a test!",
+      };
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(commentPost)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Username not found");
         });
     });
   });
@@ -498,6 +515,39 @@ describe("path: /api/comments", () => {
             expect(body.message).toBe("Invalid request");
           });
       });
+    });
+  });
+});
+
+describe.only("path: /api/users", () => {
+  describe("GET/api/users happy path", () => {
+    test("status 200 responds with array of users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const { users } = body;
+          expect(users).toHaveLength(4);
+          users.forEach((object) => {
+            expect(object).toEqual(
+              expect.objectContaining({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+  });
+  describe("GET/api/users sad path", () => {
+    test("status 404 responds with 'Path not found'", () => {
+      return request(app)
+        .get("/api/BAD_PATH")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Path not found");
+        });
     });
   });
 });
