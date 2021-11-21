@@ -1,11 +1,7 @@
 const db = require("../db");
 const { fetchArticlesByIdQuery, fetchAllArticlesQuery } = require("../queries");
 
-exports.fetchAllArticles = (
-  sort_by = "created_at",
-  order = "DESC",
-  topicQuery
-) => {
+exports.fetchAllArticles = (sort_by = "created_at", order = "DESC", topicQuery) => {
   if (
     sort_by !== "author" &&
     sort_by !== "title" &&
@@ -55,39 +51,34 @@ exports.fetchArticlesById = (article_id) => {
 };
 
 exports.updateArticle = (article_id, updates) => {
-  if (Object.keys(updates).length > 1) {
+  if (!/inc_votes/.test(Object.keys(updates))) {
+    return Promise.reject({ status: 400, message: "Invalid request" });
+  } else if (Object.keys(updates).length > 1) {
+    return Promise.reject({ status: 400, message: "Invalid request" });
+  } else if (Object.keys(updates) < 1) {
     return Promise.reject({ status: 400, message: "Invalid request" });
   } else {
     const { inc_votes } = updates;
-    if (!inc_votes) {
-      return db
-        .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
-        .then(({ rows }) => {
+    return db
+      .query("UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;", [inc_votes, article_id])
+      .then(({ rows }) => {
+        if (!rows[0]) {
+          return Promise.reject({ status: 404, message: "Not found" });
+        } else {
           return rows[0];
-        });
-    } else {
-      return db
-        .query(
-          "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;",
-          [inc_votes, article_id]
-        )
-        .then(({ rows }) => {
-          return rows[0];
-        });
-    }
+        }
+      });
   }
 };
 
 exports.fetchAllComments = (article_id) => {
-  return db
-    .query("SELECT * FROM comments WHERE article_id = $1;", [article_id])
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, message: "Not found" });
-      } else {
-        return rows;
-      }
-    });
+  return db.query("SELECT * FROM comments WHERE article_id = $1;", [article_id]).then(({ rows }) => {
+    if (!rows[0]) {
+      return Promise.reject({ status: 404, message: "Not found" });
+    } else {
+      return rows;
+    }
+  });
 };
 
 exports.inputComment = (article_id, newComment) => {
@@ -106,10 +97,11 @@ exports.inputComment = (article_id, newComment) => {
       })
       .then(() => {
         return db
-          .query(
-            "INSERT INTO comments (article_id, author, body) VALUES($1, $2, $3) RETURNING *;",
-            [article_id, username, body]
-          )
+          .query("INSERT INTO comments (article_id, author, body) VALUES($1, $2, $3) RETURNING *;", [
+            article_id,
+            username,
+            body,
+          ])
           .then(({ rows }) => {
             return rows[0];
           });

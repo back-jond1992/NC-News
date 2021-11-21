@@ -32,11 +32,11 @@ const seed = ({ articleData, commentData, topicData, userData }) => {
       return db.query(`
     CREATE TABLE articles (
       article_id SERIAL PRIMARY KEY,
-      title VARCHAR,
-      body VARCHAR,
+      title VARCHAR NOT NULL,
+      body VARCHAR NOT NULL,
       votes INT DEFAULT 0,
       topic VARCHAR REFERENCES topics(slug),
-      author VARCHAR REFERENCES users(username),
+      author VARCHAR REFERENCES users(username) NOT NULL,
       created_at TIMESTAMP DEFAULT current_timestamp
     );`);
     })
@@ -44,8 +44,8 @@ const seed = ({ articleData, commentData, topicData, userData }) => {
       return db.query(`
   CREATE TABLE comments (
     comment_id SERIAL PRIMARY KEY,
-    author VARCHAR REFERENCES users(username),
-    article_id INT REFERENCES articles(article_id),
+    author VARCHAR REFERENCES users(username) NOT NULL,
+    article_id INT REFERENCES articles(article_id) NOT NULL,
     votes INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT current_timestamp,
     body VARCHAR NOT NULL
@@ -85,14 +85,7 @@ const seed = ({ articleData, commentData, topicData, userData }) => {
           created_at
         )
         VALUES %L RETURNING *;`,
-        articleData.map((item) => [
-          item.title,
-          item.body,
-          item.votes,
-          item.topic,
-          item.author,
-          item.created_at,
-        ])
+        articleData.map((item) => [item.title, item.body, item.votes, item.topic, item.author, item.created_at])
       );
       return db.query(queryStr);
     })
@@ -106,13 +99,7 @@ const seed = ({ articleData, commentData, topicData, userData }) => {
         body
       ) 
       VALUES %L RETURNING *;`,
-        commentData.map((item) => [
-          item.author,
-          item.article_id,
-          item.votes,
-          item.created_at,
-          item.body,
-        ])
+        commentData.map((item) => [item.author, item.article_id, item.votes, item.created_at, item.body])
       );
       return db.query(queryStr);
     });

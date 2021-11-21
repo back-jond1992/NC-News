@@ -15,7 +15,7 @@ describe("path: /api", () => {
         .expect(200)
         .then(({ body }) => {
           const { api } = body;
-          expect(api).toHaveLength(8);
+          expect(api).toHaveLength(11);
           api.forEach((object) => {
             expect(object).toBeInstanceOf(Object);
           });
@@ -323,22 +323,13 @@ describe("path: /api/articles", () => {
   describe("PATCH/api/articles/:id sad patch", () => {
     test("status 400 responds with Bad request - input empty", () => {
       const article_id = 4;
-      const testArticle = {
-        article_id: 4,
-        title: "Student SUES Mitch!",
-        topic: "mitch",
-        author: "rogersop",
-        body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
-        created_at: "2020-05-06T01:14:00.000Z",
-        votes: 0,
-      };
       const updates = {};
       return request(app)
         .patch(`/api/articles/${article_id}`)
         .send(updates)
-        .expect(200)
+        .expect(400)
         .then(({ body }) => {
-          expect(body.article).toEqual(testArticle);
+          expect(body.message).toBe("Invalid request");
         });
     });
     test("status 400 responds with Bad request - invalid request", () => {
@@ -355,6 +346,28 @@ describe("path: /api/articles", () => {
     test("status 400 responds with Bad request - invalid request", () => {
       const article_id = 4;
       const updates = { inc_votes: 1, name: "I am not valid" };
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(updates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+    test("status 404 responds with not found - invalid id", () => {
+      const article_id = 989;
+      const updates = { inc_votes: 1 };
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(updates)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("status 400 responds with invalid request- incorrect request field", () => {
+      const article_id = 4;
+      const updates = { inc_v: 1 };
       return request(app)
         .patch(`/api/articles/${article_id}`)
         .send(updates)
@@ -517,7 +530,7 @@ describe("path: /api/comments", () => {
       });
     });
   });
-  describe.only("PATCH/api/comments/:comment_id happy path", () => {
+  describe("PATCH/api/comments/:comment_id happy path", () => {
     test("status 200 responds with amended object - up vote", () => {
       const comment_id = 3;
       const updates = { inc_votes: 1 };
@@ -554,6 +567,70 @@ describe("path: /api/comments", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.comment).toEqual({ ...updatedComment });
+        });
+    });
+  });
+  describe("PATCH/api/comments/:comment_id sad path", () => {
+    test("status 400 responds with invalid request - input empty", () => {
+      const comment_id = 3;
+      const updates = {};
+      return request(app)
+        .patch(`/api/comments/${comment_id}`)
+        .send(updates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+    test("status 400 invalid id", () => {
+      return request(app)
+        .patch("/api/comments/badpath")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+    test("status 404 invalid id - id does not exist", () => {
+      const updates = { inc_votes: -1 };
+      return request(app)
+        .patch("/api/comments/999")
+        .send(updates)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("status 400 wrong data type", () => {
+      const comment_id = 3;
+      const updates = { inc_votes: "bad-request" };
+      return request(app)
+        .patch(`/api/comments/${comment_id}`)
+        .send(updates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+    test("status 400 wrong too many fields", () => {
+      const comment_id = 3;
+      const updates = { inc_votes: 1, author: "jack" };
+      return request(app)
+        .patch(`/api/comments/${comment_id}`)
+        .send(updates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
+        });
+    });
+    test.only("status 400 responds with invalid request- incorrect request field", () => {
+      const comment_id = 4;
+      const updates = { inc_v: 1 };
+      return request(app)
+        .patch(`/api/articles/${comment_id}`)
+        .send(updates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Invalid request");
         });
     });
   });
@@ -600,8 +677,7 @@ describe("path: /api/users", () => {
           expect(body.user).toEqual({
             username: "butter_bridge",
             name: "jonny",
-            avatar_url:
-              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+            avatar_url: "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
           });
         });
     });

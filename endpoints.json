@@ -5,7 +5,7 @@
     }
   },
 
-  { 
+  {
     "GET /api/topics": {
       "description": "serves an array of all topics",
       "queries": [],
@@ -20,127 +20,143 @@
       "description": "serves an array of all articles",
       "queries": ["topic", "sort_by", "order"],
       "exampleResponse": {
-        "articles": 
-          [
-            {
-              "title": "Seafood substitutions are increasing",
-              "topic": "cooking",
-              "author": "weegembump",
-              "body": "Text from the article..",
-              "created_at": 1527695953341
-            }
-          ]
+        "articles": [
+          {
+            "title": "Seafood substitutions are increasing",
+            "topic": "cooking",
+            "author": "weegembump",
+            "body": "Text from the article..",
+            "created_at": 1527695953341
+          }
+        ]
       }
     }
   },
 
   {
     "GET /api/articles/:article_id": {
-      "description":"takes an article id and serves the corresponding article",
+      "description": "takes an article id and serves the corresponding article",
       "queries": [],
       "exampleResponse": {
-        "article":  
-          {
-            "author":	"jessjelly",
-            "title":"Running a Node App",
-            "article_id":	1,
-            "body":	"This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
-            "topic":	"coding",
-            "created_at":	"2020-11-07T06:03:00.000Z",
-            "votes":	0,
-            "comment_count": 8
-          }
+        "article": {
+          "author": "jessjelly",
+          "title": "Running a Node App",
+          "article_id": 1,
+          "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+          "topic": "coding",
+          "created_at": "2020-11-07T06:03:00.000Z",
+          "votes": 0,
+          "comment_count": 8
+        }
       }
     }
   },
 
-  {    
+  {
     "PATCH /api/articles/:article_id": {
-      "description":"takes a request body (an object in the form of { inc_votes: newVote }) and responds with an updated article",
+      "description": "takes a request body (an object in the form of { inc_votes: newVote }) and responds with an updated article",
       "queries": [],
       "exampleResponse": {
-        "article": 
-          {
-          "author":	"jessjelly",
-          "title":"Running a Node App",
-          "article_id":	1,
-          "body":	"This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
-          "topic":	"coding",
-          "created_at":	"2020-11-07T06:03:00.000Z",
-          "votes":	1,
-          "comment_count": 8  
+        "article": {
+          "author": "jessjelly",
+          "title": "Running a Node App",
+          "article_id": 1,
+          "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+          "topic": "coding",
+          "created_at": "2020-11-07T06:03:00.000Z",
+          "votes": 1,
+          "comment_count": 8
         }
       }
     }
   },
 
-  { 
+  {
     "GET /api/articles/:article_id/comments": {
-      "description":"takes an article id and serves an array of corresponding comments",
+      "description": "takes an article id and serves an array of corresponding comments",
       "queries": [],
       "exampleResponse": {
-        "comments":
-          [
-            {
-              "comment_id": 31,
-              "author": "weegembump",
-              "article_id":1,
-              "votes":11,
-              "created_at":"2020-09-26T17:16:00.000Z",
-              "body":"Sit sequi odio suscipit. Iure quisquam qui alias distinctio eos officia enim aut sit. Corrupti ut praesentium ut iste earum itaque qui. Dolores in ab rerum consequuntur. Id ab aliquid autem dolore."
-            }
-          ]
+        "comments": [
+          {
+            "comment_id": 31,
+            "author": "weegembump",
+            "article_id": 1,
+            "votes": 11,
+            "created_at": "2020-09-26T17:16:00.000Z",
+            "body": "Sit sequi odio suscipit. Iure quisquam qui alias distinctio eos officia enim aut sit. Corrupti ut praesentium ut iste earum itaque qui. Dolores in ab rerum consequuntur. Id ab aliquid autem dolore."
+          }
+        ]
       }
     }
   },
 
-  { 
+  {
     "POST /api/articles/:article_id/comments": {
-      "description":"takes an article id and a  request body containing two properties (username and body) and posts a new comment, serving the newly posted comment as its response",
+      "description": "takes an article id and a  request body containing two properties (username and body) and posts a new comment, serving the newly posted comment as its response",
       "queries": [],
       "exampleResponse": {
-        "comment":
-            {
-              "comment_id": 43,
-              "author": "Jack",
-              "article_id":1,
-              "votes":12,
-              "created_at":"2021-11-5T17:16:00.000Z",
-              "body":"Great article, fantastic!"
-            }
+        "comment": {
+          "comment_id": 43,
+          "author": "Jack",
+          "article_id": 1,
+          "votes": 12,
+          "created_at": "2021-11-5T17:16:00.000Z",
+          "body": "Great article, fantastic!"
         }
       }
+    }
   },
-  
+
   {
     "DELETE /api/comments/:comment_id": {
-      "description":"takes a comment id and deletes its corresponding comment, serving a 204 response.",
+      "description": "takes a comment id and deletes its corresponding comment, serving a 204 response",
       "queries": [],
-      "exampleResponse": {"status": 204, "message": "No content"}
+      "exampleResponse": { "status": 204, "message": "No content" }
     }
   },
 
-  { 
+  {
     "GET /api/users": {
       "description": "serves an array of all users",
       "queries": [],
       "exampleResponse": {
-        "users": [{ "username": "lurker", "name": "do_nothing", "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png" }]
+        "users": [
+          {
+            "username": "lurker",
+            "name": "do_nothing",
+            "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+          }
+        ]
       }
     }
   },
 
-  { 
+  {
     "GET /api/users/:username": {
       "description": "takes a username and serves the corresponding user",
       "queries": [],
       "exampleResponse": {
-        "user": 
-          { 
-            "username": "lurker", 
-            "name": "do_nothing", 
-            "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png" 
-          }
+        "user": {
+          "username": "lurker",
+          "name": "do_nothing",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      }
+    }
+  },
+  {
+    "PATCH /api/comments/:comment_id": {
+      "description": "takes a comment id and a request body(a json object in the form of { inc_votes: -1  }), serving the updated comment",
+      "queries": [],
+      "exampleResponse": {
+        "comment": {
+          "comment_id": 3,
+          "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+          "votes": 99,
+          "author": "icellusedkars",
+          "article_id": -1,
+          "created_at": "2020-03-01T01:13:00.000Z"
+        }
       }
     }
   }

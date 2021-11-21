@@ -61,3 +61,7 @@ All testing for the API has been written and can be found in the `__tests__` fol
 To run tests
 
 `npm test`
+
+### Starting the server
+
+`npm run start`
