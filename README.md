@@ -8,13 +8,15 @@ The API is hosted here: https://jacks-news.herokuapp.com/api .
 
 Available Endpoints
 
+#### GET /api
+
 #### GET /api/topics
+
+#### GET /api/articles
 
 #### GET /api/articles/:article_id
 
 #### PATCH /api/articles/:article_id
-
-#### GET /api/articles
 
 #### GET /api/articles/:article_id/comments
 
@@ -22,7 +24,11 @@ Available Endpoints
 
 #### DELETE /api/comments/:comment_id
 
-#### GET /api
+#### PATCH /api/comments/:comment_id
+
+#### GET /api/users
+
+#### GET /api/users/:username
 
 ### Getting Started
 
