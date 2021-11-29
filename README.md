@@ -1,6 +1,6 @@
 # Jack's NC News
 
-Jack' NC news is a basic API for the purpose of accessing application data programmatically. This project is designed to mimic mimic the building of a real world backend service (such as reddit).
+Jack' NC news is a basic API for the purpose of accessing application data programmatically. This project is designed to mimic the building of a real world backend service (such as reddit).
 
 Jack's NC news allows users to make GET, PATCH, POST and DELETE requests to the server.
 
@@ -54,7 +54,7 @@ And finally
 
 ### Creating .env files
 
-Two.env files will need to be created: .env.test and .env.development. Into each, add PGDATABASE=nc_news(\_test). Ubuntu users may need to add PGPASSWORD:<yourpasswordhere> Double check that these .env files are .gitignored.
+Two .env files will need to be created: .env.test and .env.development. Into each, add PGDATABASE=nc_news(\_test). Ubuntu users may need to add PGPASSWORD:<yourpasswordhere> Double check that these .env files are .gitignored.
 
 ### Requirements
 
