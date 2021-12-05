@@ -36,7 +36,7 @@ First clone repository
 
 `git clone https://github.com/back-jond1992/NC-News.git`
 
-Then install depenendencies
+Then install dependencies
 
 `npm Install`
 
